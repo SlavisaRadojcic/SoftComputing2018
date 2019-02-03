@@ -179,8 +179,7 @@ def rampa(blt, O, k, dd):
         jj = brin[1]/(brin[0]-O[0])
         
         '''
-            Ugao između dve prave
-            tgfi = (tgfi2 - tgfi1) / (1 + tgfi1*tgfi2)
+            Racunanje dva tangensa i poredjenje
             
             Ako je jj < blt, onda se broj nalazi ispod linije,
             što znači da je prošao ispod linije.
@@ -213,8 +212,9 @@ def sumiraj(video, file, m):
     nn,ff = a.mln((drag[0][0], drag[0][1]), (drag[1][0], drag[1][1]))
     
     '''
-        tačka u kojoj prava seče x osu
-        u zavisnosti od nje će se računati tangens fi ugla 
+        Odredjivanje jednacine prave 
+        i njenog preseka sa x osom na osnovu koje racunamo tangensa
+        
         y = kx + l za y = 0
     '''
     O = (-ff/nn, 0)
@@ -243,7 +243,7 @@ def sumiraj(video, file, m):
                 az(dd, zz)
             
             '''
-                Da li je broj prosao ispod linije? DA --> dodaje se na sumu.
+                Broj se sumira ako je prosao ispod linije
             '''
             for uu in zz:
                 if uu.ok == False:
