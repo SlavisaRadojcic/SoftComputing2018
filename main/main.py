@@ -262,7 +262,7 @@ def sumiraj(video, file, m):
             break
             
             
-        # Izlazimo iz petlje na kraju videa
+        #Prekid petlje posle zadnjeg frejma
         if cap.get(cv2.CAP_PROP_POS_FRAMES) == cap.get(cv2.CAP_PROP_FRAME_COUNT):
             break
         
