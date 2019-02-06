@@ -16,60 +16,26 @@ from scipy.spatial import distance
 expand = 6 # -> mlp = 88.81
 
 '''
-    Izbacivanje kontura koje se nalaze unutar drugih kontura
+     Prosledi broj kojem potom trazimo odgovarajuci u nizu
 '''
 
-def dmd(z):
-    odbacene = []
-    rez = []
-    for i in range(len(z)):
-        for j in range(len(z)):
-            if i != j:
-                t1,b1,c1,g1 = cv2.boundingRect(z[i])
-                t2,b2,c2,g2 = cv2.boundingRect(z[j])
-                
-                t11 = t1 + c1
-                b11 = b1 + g1
-                t22 = t2 + c2
-                b22 = b2 + c2
-                if ((t1 <= t22) and (t22 <= t11)):
-                    if ((b1 <= b22) and (b22 <= b11)):
-                        odbacene.append(j)
-    
-    for i in range(len(z)):
-        if not (i in odbacene):
-            rez.append(z[i])
-    return rez
 
-def os(s):
-    horizontalno, uspravno = s.shape
-    okvir = np.zeros((horizontalno+2*expand, uspravno+2*expand))
+def pron(i, bb):
+    k = []
 
-    for m in range(expand,horizontalno+expand):
-        for n in range(expand,uspravno+expand):
-            okvir[m,n] = s[m-expand,n-expand]
-    
-    return okvir
-    
+    for b in bb:
+        long = distance.euclidean((i.t + i.c, i.b + i.g), (b.t + b.c,b.b +b.g))
 
-def aproksimacija(m, odd):
-    horizontalno, uspravno = odd.shape
-    odd = os(odd)
+        if long < 30:
+            k.append([long, b])
 
-    t = cv2.resize(odd, (28, 28), interpolation = cv2.INTER_CUBIC) #INTER_NEAREST)
-    odradjena = t / 255
+    k = sorted(k, key=lambda x: x[0])   
 
-    # za mlp?
-    odrav = odradjena.flatten()
-    num = np.reshape(odrav, (1, 784))
-    
-    
-    
+    if len(k) > 0:
+        return k[0][1]
+    else:
+        return None
 
-    aprox = m.predict(num)
-    end = np.argmax(aprox)
-    print('Pretpostavljeni broj: ', end)
-    return end
 '''
     Nadji konture,obradi ih i izdvoji cifre
 '''
@@ -98,43 +64,17 @@ def dodaj(slik):
             
     return fr
 
-'''
-     Prosledi broj kojem potom trazimo odgovarajuci u nizu
-'''
 
+def os(s):
+    horizontalno, uspravno = s.shape
+    okvir = np.zeros((horizontalno+2*expand, uspravno+2*expand))
 
-def pron(i, bb):
-    k = []
-
-    for b in bb:
-        long = distance.euclidean((i.t + i.c, i.b + i.g), (b.t + b.c,b.b +b.g))
-
-        if long < 30:
-            k.append([long, b])
-
-    k = sorted(k, key=lambda x: x[0])   
-
-    if len(k) > 0:
-        return k[0][1]
-    else:
-        return None
-
-'''
-    Ažurira postojeće brojeve. Za svaki broj cemo pokrenuti funkciju 
-	koja ce imati za cilj da pokusa da pronadje odgovarajuci broj iz drugog frejma, 
-	Ako nađe, tom se broju azurira pozicija. Ako ga ne pronadje, onda se dodaje kao
-    novi broj u listu. 
-'''
-
-
-def az(dd, mm):
-    for d in dd:
-        j = pron(d, mm)
-
-        if j is None:
-            mm.append(d)       
-        else:
-            j.bnl(d.t, d.b, d.c, d.g)
+    for m in range(expand,horizontalno+expand):
+        for n in range(expand,uspravno+expand):
+            okvir[m,n] = s[m-expand,n-expand]
+    
+    return okvir
+    
 
 '''
     Metoda koja izbacuje predaleke brojeve(koji nisu od interesa)
@@ -149,16 +89,6 @@ def ods(m):
             p.append(j)
     
     return p
-
-'''
-    Crtanje brojeva na frejm
-'''
-def graf(dd, b):
-    for d in dd:
-        m = (int((d.x + (d.x + d.w)) / 2), int((d.y + (d.y + d.h)) / 2))
-        cv2.putText(b, ('Width: ' + str(d.w) + ' Height: ' + str(d.h)), m, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 255, 255), 1, cv2.LINE_AA)
-        cv2.rectangle(b, (d.x,d.y), (d.x+d.w,d.y+d.h),(0,255,255),1)
-
 
 '''
     Provera da li je broj prosao ispod linije
@@ -192,6 +122,91 @@ def rampa(blt, O, k, dd):
         
     else:
         return False
+    
+
+'''
+    Crtanje brojeva na frejm
+'''
+def graf(dd, b):
+    for d in dd:
+        m = (int((d.x + (d.x + d.w)) / 2), int((d.y + (d.y + d.h)) / 2))
+        cv2.putText(b, ('Width: ' + str(d.w) + ' Height: ' + str(d.h)), m, cv2.FONT_HERSHEY_SIMPLEX, 0.5, (200, 255, 255), 1, cv2.LINE_AA)
+        cv2.rectangle(b, (d.x,d.y), (d.x+d.w,d.y+d.h),(0,255,255),1)
+        
+        
+
+def aproksimacija(m, odd):
+    horizontalno, uspravno = odd.shape
+    odd = os(odd)
+
+    t = cv2.resize(odd, (28, 28), interpolation = cv2.INTER_CUBIC) #INTER_NEAREST)
+    odradjena = t / 255
+
+    # za mlp?
+    odrav = odradjena.flatten()
+    num = np.reshape(odrav, (1, 784))
+    
+    
+    
+
+    aprox = m.predict(num)
+    end = np.argmax(aprox)
+    print('Pretpostavljeni broj: ', end)
+    return end
+
+'''
+    Ažurira postojeće brojeve. Za svaki broj cemo pokrenuti funkciju 
+	koja ce imati za cilj da pokusa da pronadje odgovarajuci broj iz drugog frejma, 
+	Ako nađe, tom se broju azurira pozicija. Ako ga ne pronadje, onda se dodaje kao
+    novi broj u listu. 
+'''
+
+
+def az(dd, mm):
+    for d in dd:
+        j = pron(d, mm)
+
+        if j is None:
+            mm.append(d)       
+        else:
+            j.bnl(d.t, d.b, d.c, d.g)
+
+
+'''
+    Izbacivanje kontura koje se nalaze unutar drugih kontura
+'''
+
+def dmd(z):
+    odbacene = []
+    rez = []
+    for i in range(len(z)):
+        for j in range(len(z)):
+            if i != j:
+                t1,b1,c1,g1 = cv2.boundingRect(z[i])
+                t2,b2,c2,g2 = cv2.boundingRect(z[j])
+                
+                t11 = t1 + c1
+                b11 = b1 + g1
+                t22 = t2 + c2
+                b22 = b2 + c2
+                if ((t1 <= t22) and (t22 <= t11)):
+                    if ((b1 <= b22) and (b22 <= b11)):
+                        odbacene.append(j)
+    
+    for i in range(len(z)):
+        if not (i in odbacene):
+            rez.append(z[i])
+    return rez
+
+
+
+
+
+
+
+
+
+
 
 '''
     Obrada video sadrzaja i upis u out.txt datoteku
@@ -271,6 +286,9 @@ def sumiraj(video, file, m):
     
     print('suma -> ', rr)
     file.write('\n' + video + '\t' + str(rr))
+
+
+
 
 
 
