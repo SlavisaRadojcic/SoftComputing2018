@@ -284,11 +284,11 @@ def main():
         out.write('RA 191/2013 Slavisa Radojcic')
         out.write('\nfile\tsum')
         
-        videos = ['video-0.avi', 'video-1.avi', 'video-2.avi', 'video-3.avi', 'video-4.avi', 'video-5.avi', 'video-6.avi', 'video-7.avi', 'video-8.avi', 'video-9.avi']
+        snimci = ['video-0.avi', 'video-1.avi', 'video-2.avi', 'video-3.avi', 'video-4.avi', 'video-5.avi', 'video-6.avi', 'video-7.avi', 'video-8.avi', 'video-9.avi']
         print('Obrada video sadrzaja u toku')
-        for video in videos:
-            print(video)
-            sumiraj(video, out, ml)
+        for snimak in snimci:
+            print(snimak)
+            sumiraj(snimak, out, ml)
         print('Kraj obrade')
         
        
