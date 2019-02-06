@@ -140,12 +140,12 @@ def az(dd, mm):
     Metoda koja izbacuje predaleke brojeve(koji nisu od interesa)
 '''
 
-#removeFarAwayNumbers(numbers):
+
 def ods(m):
     p = []
     for j in m:
         if (j.t + j.c < 620) and (j.b + j.g < 470):
-        #if not (num.get_bottom_right()[1] > 470 or num.get_bottom_right()[0] > 620):
+        
             p.append(j)
     
     return p

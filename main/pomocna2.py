@@ -15,7 +15,7 @@ def mln(u1, u2):
     return (gg,ff)
 
 '''
-    Prepoznavanje linije upotrebom Houghove transformacije
+    Linija preko Hougha
 '''
 def fn(slik, frame):
     nb = []
