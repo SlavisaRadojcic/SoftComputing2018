@@ -161,53 +161,6 @@ def aproksimacija(m, odd):
     novi broj u listu. 
 '''
 
-
-def az(dd, mm):
-    for d in dd:
-        j = pron(d, mm)
-
-        if j is None:
-            mm.append(d)       
-        else:
-            j.bnl(d.t, d.b, d.c, d.g)
-
-
-'''
-    Izbacivanje kontura koje se nalaze unutar drugih kontura
-'''
-
-def dmd(z):
-    odbacene = []
-    rez = []
-    for i in range(len(z)):
-        for j in range(len(z)):
-            if i != j:
-                t1,b1,c1,g1 = cv2.boundingRect(z[i])
-                t2,b2,c2,g2 = cv2.boundingRect(z[j])
-                
-                t11 = t1 + c1
-                b11 = b1 + g1
-                t22 = t2 + c2
-                b22 = b2 + c2
-                if ((t1 <= t22) and (t22 <= t11)):
-                    if ((b1 <= b22) and (b22 <= b11)):
-                        odbacene.append(j)
-    
-    for i in range(len(z)):
-        if not (i in odbacene):
-            rez.append(z[i])
-    return rez
-
-
-
-
-
-
-
-
-
-
-
 '''
     Obrada video sadrzaja i upis u out.txt datoteku
 '''
@@ -286,6 +239,45 @@ def sumiraj(video, file, m):
     
     print('suma -> ', rr)
     file.write('\n' + video + '\t' + str(rr))
+
+def az(dd, mm):
+    for d in dd:
+        j = pron(d, mm)
+
+        if j is None:
+            mm.append(d)       
+        else:
+            j.bnl(d.t, d.b, d.c, d.g)
+
+
+'''
+    Izbacivanje kontura koje se nalaze unutar drugih kontura
+'''
+
+def dmd(z):
+    odbacene = []
+    rez = []
+    for i in range(len(z)):
+        for j in range(len(z)):
+            if i != j:
+                t1,b1,c1,g1 = cv2.boundingRect(z[i])
+                t2,b2,c2,g2 = cv2.boundingRect(z[j])
+                
+                t11 = t1 + c1
+                b11 = b1 + g1
+                t22 = t2 + c2
+                b22 = b2 + c2
+                if ((t1 <= t22) and (t22 <= t11)):
+                    if ((b1 <= b22) and (b22 <= b11)):
+                        odbacene.append(j)
+    
+    for i in range(len(z)):
+        if not (i in odbacene):
+            rez.append(z[i])
+    return rez
+
+
+
 
 
 
